@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 const winston = require('winston');
 const express = require('express');
 require('dotenv').config({ path: './.env' });
-console.log(process.env);
+// console.log(process.env);
 
 const app = express();
 const server = require('http').createServer(app);
@@ -34,9 +34,9 @@ const logger = winston.createLogger({
 client.commands = new Discord.Collection();
 const cooldowns = new Discord.Collection();
 
-const commandFiles = fs.readdirSync(`${process.env.INIT_CWD}/commands`).filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(`.${process.env.INIT_CWD}/Commands`).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
-    const command = require(`${process.env.INIT_CWD}/commands/${file}`);
+    const command = require(`.${process.env.INIT_CWD}/Commands/${file}`);
 
 	// set a new item in the Collection
 	// with the key as the command name and the value as the exported module
