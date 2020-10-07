@@ -69,7 +69,7 @@ function urMom(message) {
 
 client.on('message', message => {
     const user = message.author;
-    if(!message.author.bot) logger.log('info', user.username + ': ' + message.content);
+    // if(!message.author.bot) logger.log('info', user.username + ': ' + message.content);
 
     const responseObject = {
        'walter': 'Walter ' + message.guild.emojis.cache.find(emoji => emoji.name === 'walter').toString(),
