@@ -36,7 +36,7 @@ const cooldowns = new Discord.Collection();
 
 const commandFiles = fs.readdirSync(`${process.env.INIT_CWD}/Commands`).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
-    const command = require(`.${process.env.INIT_CWD}/Commands/${file}`);
+    const command = require(`${process.env.INIT_CWD}/Commands/${file}`);
 
 	// set a new item in the Collection
 	// with the key as the command name and the value as the exported module
