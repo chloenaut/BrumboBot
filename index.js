@@ -59,9 +59,6 @@ function urMom(message) {
             return 'fuck u';
             break;
         case 2:
-            return message.guild.emojis.cache.find(emoji => emoji.name === 'SaySike').toString();
-            break;
-        case 3:
             return 'no u';
             break;
     }
@@ -72,7 +69,7 @@ client.on('message', message => {
     // if(!message.author.bot) logger.log('info', user.username + ': ' + message.content);
 
     const responseObject = {
-       'walter': 'Walter ' + message.guild.emojis.cache.find(emoji => emoji.name === 'walter').toString(),
+       'walter': 'Walter ',
        'todd' : 'Todd!',
        'bees' : 'SHIT!! WHERE??!',
        'brumbo' : 'no u',
