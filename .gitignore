@@ -1,5 +1,5 @@
 .env
-.eslintrc.json
+.gitignore
 node_modules/
 discordBotLog
 /.eslintrc.json
