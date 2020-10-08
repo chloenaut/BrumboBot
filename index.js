@@ -17,16 +17,14 @@ app.get('/', (request, response) => {
 const listener = server.listen(port, function() {
   console.log('Your app is listening on port ' + listener.address().port);
 });
-/* (setInterval(() => {
-    }, 280000);
-*/
+
 const client = new Discord.Client();
 // Logger
 
 const logger = winston.createLogger({
         transports: [
 		new winston.transports.Console(),
-		new winston.transports.File({ filename: 'discordBotLog' }),
+		// new winston.transports.File({ filename: 'discordBotLog' }),
 	],
 	format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
 });
@@ -66,9 +64,8 @@ function urMom(message) {
 }
 
 client.on('message', message => {
+    if (message.author.bot) return;
     const user = message.author;
-    // if(!message.author.bot) logger.log('info', user.username + ': ' + message.content);
-
     const responseObject = {
        'walter': 'Walter',
        'todd' : 'Todd!',
@@ -81,35 +78,35 @@ client.on('message', message => {
 
     try {
         const msg = message.content.toLowerCase();
-        if(!message.author.bot && responseObject[msg]) message.channel.send(responseObject[msg]);
+        if(responseObject[msg]) message.channel.send(responseObject[msg]);
     }
     catch(error) {
         console.error(error);
         message.reply('there was an error trying to execute that command!');
     }
-    if (!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
+
+    if (!message.content.startsWith(process.env.PREFIX)) return;
 
     const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
-	if (!client.commands.has(command)) return;
-    if (!cooldowns.has(command.name)) {
-        cooldowns.set(command.name, new Discord.Collection());
-    }
+    if (!client.commands.has(command)) return;
 
+    if (!cooldowns.has(command.name)) cooldowns.set(command.name, new Discord.Collection());
     const now = Date.now();
     const timestamps = cooldowns.get(command.name);
     const cooldownAmount = (command.cooldown || 3) * 1000;
     if (timestamps.has(message.author.id)) {
         const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-
         if (now < expirationTime) {
             const timeLeft = (expirationTime - now) / 1000;
             return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
         }
     }
-    timestamps.set(message.author.id, now);
-    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+    else {
+        timestamps.set(message.author.id, now);
+        setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+    }
 
     try {
         client.commands.get(command).execute(message, args);
