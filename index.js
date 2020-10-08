@@ -47,7 +47,7 @@ client.on('ready', () => logger.log('info', 'Logged in as: ' + client.user.tag))
 client.on('debug', m => logger.log('debug', m));
 client.on('warn', m => logger.log('warn', m));
 client.on('error', m => logger.log('error', m));
-
+process.on('unhandledRejection', error => console.error('Uncaught Promise Rejection', error));
 process.on('uncaughtException', error => logger.log('error', error));
 
 function urMom(message) {
