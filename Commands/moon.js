@@ -35,11 +35,12 @@ module.exports = {
 				.setDescription(`Local time: ${data.location.localtime}`)
 				.setAuthor(message.author.username, avatar, avatar)
 				.addFields(
-					{ name: 'Sunrise', value: `${data.astro.sunrise}` },
-					{ name: 'Sunset', value: `${data.astro.sunset}` },
-					{ name: 'Moonrise', value:`${data.astro.moonrise}%` },
-					{ name: 'Moonset', value:`${data.astro.moonset}%` },
-					{ name: 'Moon Phase', value: data.astro.moon_phase + ' ' + ':' + data.astro.moon_phase.toLowerCase().replace(/ /g, '_') + '_moon:' },
+					{ name: 'Sunrise', value: `${data.astronomy.astro.sunrise}` },
+					{ name: 'Sunset', value: `${data.astronomy.astro.sunset}` },
+					{ name: 'Moonrise', value:`${data.astronomy.astro.moonrise}%` },
+					{ name: 'Moonset', value:`${data.astronomy.astro.moonset}%` },
+					{ name: 'Moon Phase', value: data.astronomy.astro.moon_phase + ' ' + ':' + data.astronomy.astro.moon_phase.toLowerCase().replace(/ /g, '_') + '_moon:' },
+					{ name: 'Moon Illumination', value: `${data.astronomy.astro.moon_illumination}%` },
 					)
 				.setImage(`http:${data.current.condition.icon}`)
 				.addField('Data Last Updated', data.current.last_updated)
