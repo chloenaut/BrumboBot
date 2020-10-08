@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 module.exports = {
 	name: 'cweather',
 	description: 'gets the current weather',
-	cooldown: 20,
+	cooldown: 5,
 	execute(message, args) {
 		if(!args.length || args.length > 1) return message.channel.send('Usage: $cweather [US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree)e.g: 48.8567,2.3508 or city name]');
 		const api_url = `http://api.weatherapi.com/v1/current.json?key=${process.env.WEATHER_API_KEY}&q=${args[0]}`;
@@ -14,7 +14,6 @@ module.exports = {
 				.then(json => data = json)
 				.catch(err => {
 					console.error(err);
-					// TODO error code handling
 					return message.channel.send('there was an error trying to execute that command!');
 			});
 			if ('error' in data) {

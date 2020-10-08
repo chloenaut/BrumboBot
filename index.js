@@ -19,6 +19,7 @@ const listener = server.listen(port, function() {
 });
 
 const client = new Discord.Client();
+
 // Logger
 
 const logger = winston.createLogger({
