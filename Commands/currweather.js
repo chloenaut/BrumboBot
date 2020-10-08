@@ -1,11 +1,9 @@
-/* eslint-disable no-unreachable */
-/* eslint-disable no-undef */
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
 module.exports = {
 	name: 'cweather',
 	description: 'gets the current weather',
-	cooldown: 240,
+	cooldown: 20,
 	execute(message, args) {
 		if(!args.length || args.length > 1) return message.channel.send('Usage: $cweather [US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree)e.g: 48.8567,2.3508 or city name]');
 		const api_url = `http://api.weatherapi.com/v1/current.json?key=${process.env.WEATHER_API_KEY}&q=${args[0]}`;

@@ -66,6 +66,7 @@ function urMom(message) {
 client.on('message', message => {
     if (message.author.bot) return;
     const user = message.author;
+
     const responseObject = {
        'walter': 'Walter',
        'todd' : 'Todd!',
@@ -76,17 +77,15 @@ client.on('message', message => {
        'ur mom' : urMom(message),
     };
 
+    const msg = message.content.toLowerCase();
+    if (!message.content.startsWith(process.env.PREFIX) && !responseObject[msg]) return;
     try {
-        const msg = message.content.toLowerCase();
-        if(responseObject[msg]) message.channel.send(responseObject[msg]);
+        if(responseObject[msg]) return message.channel.send(responseObject[msg]);
     }
     catch(error) {
         console.error(error);
         message.reply('there was an error trying to execute that command!');
     }
-
-    if (!message.content.startsWith(process.env.PREFIX)) return;
-
     const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
@@ -95,18 +94,16 @@ client.on('message', message => {
     if (!cooldowns.has(command.name)) cooldowns.set(command.name, new Discord.Collection());
     const now = Date.now();
     const timestamps = cooldowns.get(command.name);
-    const cooldownAmount = (command.cooldown || 3) * 1000;
+    const cooldownAmount = (client.commands.get(command).cooldown || 3) * 1000;
     if (timestamps.has(message.author.id)) {
         const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
         if (now < expirationTime) {
             const timeLeft = (expirationTime - now) / 1000;
-            return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+            return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${ client.commands.get(command).name}\` command.`);
         }
     }
-    else {
-        timestamps.set(message.author.id, now);
-        setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-    }
+    timestamps.set(message.author.id, now);
+    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
     try {
         client.commands.get(command).execute(message, args);
