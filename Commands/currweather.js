@@ -12,13 +12,18 @@ module.exports = {
 		let data;
 		async function getCurrWeather()	{
 			const response = await fetch(api_url)
+				.then(res => res.json())
+				.then(json => data = json)
 				.catch(err => {
 					console.error(err);
 					// TODO error code handling
-					return message.reply('there was an error trying to execute that command!');
-				})
-				.then(res => res.json())
-				.then(json => data = json);
+					return message.channel.send('there was an error trying to execute that command!');
+			});
+			if ('error' in data) {
+				if (data.error.code == 1006)return message.channel.send('Could not find that location!');
+				else if  (data.error.code == 2007)return message.channel.send('Request Quota for API has been reached. Sorry for the inconvenience.');
+				else return message.channel.send('there was an error trying to execute that command!');
+			}
 			const avatar = message.author.displayAvatarURL({ format: 'png', dynamic: true });
 			const userEmbed = new Discord.MessageEmbed()
 				.setColor('#0099ff')

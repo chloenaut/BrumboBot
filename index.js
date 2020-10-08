@@ -4,6 +4,7 @@ const Discord = require('discord.js');
 const winston = require('winston');
 const express = require('express');
 require('dotenv').config({ path: './.env' });
+
 // console.log(process.env);
 
 const app = express();
@@ -69,7 +70,7 @@ client.on('message', message => {
     // if(!message.author.bot) logger.log('info', user.username + ': ' + message.content);
 
     const responseObject = {
-       'walter': 'Walter ',
+       'walter': 'Walter',
        'todd' : 'Todd!',
        'bees' : 'SHIT!! WHERE??!',
        'brumbo' : 'no u',
