@@ -12,8 +12,7 @@ module.exports = {
 		const mm = String(today.getMonth() + 1).padStart(2, '0');
 		const yyyy = today.getFullYear();
 		today = yyyy + '-' + mm + '-' + dd;
-
-		const api_url = `http://api.weatherapi.com/v1/current.json?key=${process.env.WEATHER_API_KEY}&q=${args[0]}&dt${today}`;
+		const api_url = `http://api.weatherapi.com/v1/astronomy.json?key=${process.env.WEATHER_API_KEY}&q=${args[0]}&dt${today}`;
 		let data;
 		async function getAstroData()	{
 			const response = await fetch(api_url)
@@ -37,17 +36,21 @@ module.exports = {
 				.addFields(
 					{ name: 'Sunrise', value: `${data.astronomy.astro.sunrise}` },
 					{ name: 'Sunset', value: `${data.astronomy.astro.sunset}` },
-					{ name: 'Moonrise', value:`${data.astronomy.astro.moonrise}%` },
-					{ name: 'Moonset', value:`${data.astronomy.astro.moonset}%` },
+					{ name: 'Moonrise', value:`${data.astronomy.astro.moonrise}` },
+					{ name: 'Moonset', value:`${data.astronomy.astro.moonset}` },
 					{ name: 'Moon Phase', value: data.astronomy.astro.moon_phase + ' ' + ':' + data.astronomy.astro.moon_phase.toLowerCase().replace(/ /g, '_') + '_moon:' },
 					{ name: 'Moon Illumination', value: `${data.astronomy.astro.moon_illumination}%` },
 					)
-				.setImage(`http:${data.current.condition.icon}`)
-				.addField('Data Last Updated', data.current.last_updated)
 				.setTimestamp()
 				.setFooter('brumbo', avatar);
 			message.channel.send(userEmbed);
 		}
-		getAstroData();
+		try {
+			getAstroData();
+		}
+		catch(error) {
+			console.error(error);
+			return message.reply('there was an error trying to execute that command!');
+		}
 	},
 };
