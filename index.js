@@ -98,8 +98,10 @@ const responseObject = {
 
 // Message Actions
 client.on('message', message => {
+
     if (message.author.bot) return;
-    const user = message.author;
+
+    // Phrase Response
     const msg = message.content.toLowerCase();
     if (!message.content.startsWith(process.env.PREFIX) && !responseObject[msg]) return;
     try {
@@ -110,11 +112,13 @@ client.on('message', message => {
         message.reply('there was an error trying to execute that command!');
     }
 
+    // Get Command and Args from Message
     const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
     if (!commandList[command]) return;
 
+    // Command Cooldown Handling
     if (!cooldowns[command.name]) cooldowns[command.name] = {};
     const now = Date.now();
     const timestamps = cooldowns[command.name];
@@ -129,6 +133,7 @@ client.on('message', message => {
     timestamps[message.author.id] = now;
     setTimeout(() => delete timestamps[message.author.id], cooldownAmount);
 
+    // Execute Command
     try {
         commandList[command].execute(message, args, broadcasts);
     }
