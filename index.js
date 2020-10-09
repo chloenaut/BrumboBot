@@ -71,6 +71,7 @@ client.on('error', m => logger.log('error', m));
 process.on('unhandledRejection', error => logger.log('error', error));
 process.on('uncaughtException', error => logger.log('error', error));
 
+// Respond to Mentioning our mother
 function urMom() {
     switch (Math.floor(Math.random() * 4)) {
         case 0:
