@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /* eslint-disable curly */
 /* eslint-disable no-unreachable */
 const fs = require('fs');
@@ -7,8 +6,7 @@ const winston = require('winston');
 const express = require('express');
 require('dotenv').config({ path: './.env' });
 
-// console.log(process.env);
-
+// Express App Start
 const app = express();
 const server = require('http').createServer(app);
 const port = process.env.PORT || 3200;
@@ -22,33 +20,32 @@ const listener = server.listen(port, function() {
 
 
 // Logger
-
 const logger = winston.createLogger({
         transports: [
 		new winston.transports.Console(),
-		// new winston.transports.File({ filename: 'discordBotLog' }),
 	],
 	format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
 });
 
-
+// Globals
 const client = new Discord.Client();
 const broadcasts = {};
 const commandList = {};
 const cooldowns = {};
 let helpList = '';
 
-// get commandsc
+// Get Commands
 const commandFiles = fs.readdirSync(`${process.env.INIT_CWD}/Commands`).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const module = require(`${process.env.INIT_CWD}/Commands/${file}`);
-    helpList += '**__' + module.name + '__**\n';
+    helpList += '**__--' + module.name + '__--**\n';
     for (const command in module.commands) {
         commandList[command] = module.commands[command];
         helpList += '***' +  module.commands[command].name + '***' + '\n`' +  module.commands[command].description + '`\n';
     }
 }
 
+// Client Ready
 client.on('ready', () => {
     logger.log('info', 'Logged in as: ' + client.user.tag);
     client.user.setActivity('brumbo', { type: 'WATCHING' });
@@ -67,10 +64,11 @@ client.on('ready', () => {
     };
 });
 
+// Debug and Logging
 client.on('debug', m => logger.log('debug', m));
 client.on('warn', m => logger.log('warn', m));
 client.on('error', m => logger.log('error', m));
-process.on('unhandledRejection', error => console.error('Uncaught Promise Rejection', error));
+process.on('unhandledRejection', error => logger.log('error', error));
 process.on('uncaughtException', error => logger.log('error', error));
 
 function urMom() {
@@ -87,11 +85,8 @@ function urMom() {
     }
 }
 
-client.on('message', message => {
-    if (message.author.bot) return;
-    const user = message.author;
-
-    const responseObject = {
+// Word Responses
+const responseObject = {
        'walter': 'Walter',
        'todd' : 'Todd!',
        'bees' : 'SHIT!! WHERE??!',
@@ -99,8 +94,12 @@ client.on('message', message => {
        'michael jackson' : 'https://www.youtube.com/watch?v=rlgzzWTurf4',
        'psst' : 'ʸᵉᵃ ʷʰᵃᵗ\'ˢ ᵘᵖˀ',
        'ur mom' : urMom(),
-    };
+};
 
+// Message Actions
+client.on('message', message => {
+    if (message.author.bot) return;
+    const user = message.author;
     const msg = message.content.toLowerCase();
     if (!message.content.startsWith(process.env.PREFIX) && !responseObject[msg]) return;
     try {
