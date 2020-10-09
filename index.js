@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 /* eslint-disable no-unreachable */
 const fs = require('fs');
 const Discord = require('discord.js');
@@ -18,7 +19,6 @@ const listener = server.listen(port, function() {
   console.log('Your app is listening on port ' + listener.address().port);
 });
 
-const client = new Discord.Client();
 
 // Logger
 
@@ -30,27 +30,39 @@ const logger = winston.createLogger({
 	format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
 });
 
-// get commands
-client.commands = new Discord.Collection();
-const cooldowns = new Discord.Collection();
 
+const client = new Discord.Client();
+const broadcasts = {};
+const commandList = {};
+const cooldowns = {};
+
+// get commandsc
 const commandFiles = fs.readdirSync(`${process.env.INIT_CWD}/Commands`).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
-    const command = require(`${process.env.INIT_CWD}/Commands/${file}`);
-
-	// set a new item in the Collection
-	// with the key as the command name and the value as the exported module
-	client.commands.set(command.name, command);
+    const module = require(`${process.env.INIT_CWD}/Commands/${file}`);
+    for (const command in module.commands)
+        commandList[command] = module.commands[command];
 }
 
-client.on('ready', () => logger.log('info', 'Logged in as: ' + client.user.tag));
+client.on('ready', () => {
+    logger.log('info', 'Logged in as: ' + client.user.tag);
+    client.user.setActivity('brumbo', { type: 'WATCHING' });
+    commandList['help'] = {
+        name:'help',
+        description:'help!',
+        execute(message, args) {
+            message.channel.send(commandList.map(command => '**' + command.name + '**' + '\n`' + command.description + '`\n').join(''));
+        },
+    };
+});
+
 client.on('debug', m => logger.log('debug', m));
 client.on('warn', m => logger.log('warn', m));
 client.on('error', m => logger.log('error', m));
 process.on('unhandledRejection', error => console.error('Uncaught Promise Rejection', error));
 process.on('uncaughtException', error => logger.log('error', error));
 
-function urMom(message) {
+function urMom() {
     switch (Math.floor(Math.random() * 4)) {
         case 0:
             return 'no ur mom';
@@ -75,7 +87,7 @@ client.on('message', message => {
        'brumbo' : 'no u',
        'michael jackson' : 'https://www.youtube.com/watch?v=rlgzzWTurf4',
        'psst' : 'ʸᵉᵃ ʷʰᵃᵗ\'ˢ ᵘᵖˀ',
-       'ur mom' : urMom(message),
+       'ur mom' : urMom(),
     };
 
     const msg = message.content.toLowerCase();
@@ -87,27 +99,28 @@ client.on('message', message => {
         console.error(error);
         message.reply('there was an error trying to execute that command!');
     }
+
     const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
-    if (!client.commands.has(command)) return;
+    if (!commandList[command]) return;
 
-    if (!cooldowns.has(command.name)) cooldowns.set(command.name, new Discord.Collection());
+    if (!cooldowns[command.name]) cooldowns[command.name] = {};
     const now = Date.now();
-    const timestamps = cooldowns.get(command.name);
-    const cooldownAmount = (client.commands.get(command).cooldown || 3) * 1000;
-    if (timestamps.has(message.author.id)) {
-        const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+    const timestamps = cooldowns[command.name];
+    const cooldownAmount = (commandList[command].cooldown || 3) * 1000;
+    if (timestamps[message.author.id]) {
+        const expirationTime = timestamps[message.author.id] + cooldownAmount;
         if (now < expirationTime) {
             const timeLeft = (expirationTime - now) / 1000;
-            return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${ client.commands.get(command).name}\` command.`);
+            return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${ commandList[command].name}\` command.`);
         }
     }
-    timestamps.set(message.author.id, now);
-    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+    timestamps[message.author.id] = now;
+    setTimeout(() => delete timestamps[message.author.id], cooldownAmount);
 
     try {
-        client.commands.get(command).execute(message, args);
+        commandList[command].execute(message, args, broadcasts);
     }
     catch (error) {
         console.error(error);
