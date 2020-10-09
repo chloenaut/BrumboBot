@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable curly */
 /* eslint-disable no-unreachable */
 const fs = require('fs');
@@ -47,6 +48,12 @@ for (const file of commandFiles) {
 client.on('ready', () => {
     logger.log('info', 'Logged in as: ' + client.user.tag);
     client.user.setActivity('brumbo', { type: 'WATCHING' });
+    /* client.guilds.cache.each(guild => {
+        const channel = guild.voiceStates.cache.find(state => state.member.id === process.env.BOTID);
+        if(channel) {
+            channel.kick();
+        }
+    }); */
     commandList['help'] = {
         name:'help',
         description:'help!',

@@ -1,15 +1,15 @@
 /* eslint-disable no-undef */
+const Discord = require('discord.js');
 module.exports = {
 	name: 'play',
 	commands:{
 		play:{
-			description: 'Pings Bot',
+			description: 'plays music',
 			cooldown: 2,
 			music: true,
 			execute(message, args, broadcasts) {
 				// send the message to the channel
-				const user = message.guild.members.get(message.author.id);
-				if(!user.VoiceState.channelID) return;
+				if(!message.member.voice.channelID) return;
 
 				async function join(channel) {
 					if (!channel.joinable) {
@@ -17,8 +17,8 @@ module.exports = {
 						return;
 					}
 					const connection = await channel.join();
-					const broadcast = client.voice.createBroadcast();
-					const dispatcher = broadcast.play('http://jerl.me:8000/jerl2');
+					const broadcast = message.client.voice.createBroadcast();
+					const dispatcher = broadcast.play('http://jerl.me:8000/jerl');
 					connection.play(broadcast);
 					dispatcher.on('start', () => {
 						console.log('icecast started');
@@ -30,7 +30,7 @@ module.exports = {
 					broadcasts[channel.id] = broadcast;
 				}
 				try {
-					join(user.VoiceState.channel);
+					join(message.member.voice.channel);
 				}
 				catch(error) {
 					console.error(error);
@@ -43,10 +43,10 @@ module.exports = {
 			cooldown: 2,
 			music: true,
 			execute(message, args, broadcasts) {
-				const user = message.guild.members;
-				if(!user.VoiceState.channelID) return;
-				broadcasts[user.VoiceState.channelID].end();
-				delete broadcasts[user.VoiceState.channelID];
+				if(!message.member.voice.channelID) return;
+				broadcasts[message.member.voice.channelID].end();
+				delete broadcasts[message.member.voice.channelID];
+				message.guild.members.cache.get(process.env.BOTID).voice.connection.disconnect();
 			},
 		},
 	},
