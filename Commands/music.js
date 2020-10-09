@@ -1,9 +1,10 @@
 /* eslint-disable no-undef */
 const Discord = require('discord.js');
 module.exports = {
-	name: 'play',
+	name: 'Music Commands',
 	commands:{
 		play:{
+			name:'play',
 			description: 'plays music',
 			cooldown: 2,
 			music: true,
@@ -39,7 +40,8 @@ module.exports = {
 			},
 		},
 		stop:{
-			description: 'Stops Audio',
+			name:'stop',
+			description: 'stops music',
 			cooldown: 2,
 			music: true,
 			execute(message, args, broadcasts) {

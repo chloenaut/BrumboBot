@@ -1,10 +1,11 @@
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
 module.exports = {
-	name: 'weather',
+	name: 'Weather Commands',
 	commands:{
 		cweather:{
-			description: 'gets the current weather',
+			name:'cweather',
+			description: 'gets the current weather\nUsage: $cweather [US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree)e.g: 48.8567,2.3508 or city name]',
 			cooldown: 5,
 			execute(message, args) {
 				if(!args.length || args.length > 1) return message.channel.send('Usage: $cweather [US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree)e.g: 48.8567,2.3508 or city name]');
@@ -52,7 +53,8 @@ module.exports = {
 			},
 		},
 		moon: {
-			description: 'gets astro data',
+			name:'moon',
+			description: 'gets astro data\nUsage: $moon [US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree)e.g: 48.8567,2.3508 or city name]',
 			cooldown: 5,
 			execute(message, args) {
 				if(!args.length || args.length > 1) return message.channel.send('Usage: $cweather [US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree)e.g: 48.8567,2.3508 or city name]');

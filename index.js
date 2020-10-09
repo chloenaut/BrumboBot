@@ -36,13 +36,17 @@ const client = new Discord.Client();
 const broadcasts = {};
 const commandList = {};
 const cooldowns = {};
+let helpList = '';
 
 // get commandsc
 const commandFiles = fs.readdirSync(`${process.env.INIT_CWD}/Commands`).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const module = require(`${process.env.INIT_CWD}/Commands/${file}`);
-    for (const command in module.commands)
+    helpList += '**__' + module.name + '__**\n';
+    for (const command in module.commands) {
         commandList[command] = module.commands[command];
+        helpList += '***' +  module.commands[command].name + '***' + '\n`' +  module.commands[command].description + '`\n';
+    }
 }
 
 client.on('ready', () => {
@@ -58,7 +62,7 @@ client.on('ready', () => {
         name:'help',
         description:'help!',
         execute(message, args) {
-            message.channel.send(commandList.map(command => '**' + command.name + '**' + '\n`' + command.description + '`\n').join(''));
+            message.channel.send(helpList);
         },
     };
 });
